@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from "react-redux";
 import {ListGroupItem, ListGroup} from "reactstrap";
 
@@ -6,9 +6,18 @@ import './Contacts.css'
 import MyModal from "../../UI/MyModal/MyModal";
 import nanoid from "nanoid";
 import Button from "reactstrap/es/Button";
-import {deleteUser} from "../../actions/action";
+import {addContacts} from "../../actions/action";
+import axios from "axios";
 
 const Contacts = props => {
+
+    const init = async () => {
+      await props.addContactes()
+    };
+
+    useEffect(() => {
+        init()
+    }, []);
 
     const initialMoreInfoShow = {show: false};
     const [moreInfoShow, setMoreInfoShow] = useState(initialMoreInfoShow);
@@ -19,19 +28,19 @@ const Contacts = props => {
     };
     const [userInfo, setUserInfo] = useState(initialUserInfo);
 
-    const openMoreInfoShow = phone => {
-        const index = props.contacts.findIndex(elem => elem.phone === phone);
-        setUserInfo({...userInfo, index: index, info: props.contacts[index]});
+    const openMoreInfoShow = (index, elem) => {
+        setUserInfo({...userInfo, index: index, info: elem});
         setMoreInfoShow({show: true});
     };
     const closeMoreInfoShow = () => {
         setMoreInfoShow({show: false});
     };
 
-    const deleteUser = index => {
+    const deleteUser = async index => {
         const isDelete = window.confirm('Вы действительно хотите удалить пользователя?');
         if(isDelete === true){
-            props.deleteUser(index);
+            await axios.delete('https://lesson-69-ramazan.firebaseio.com/ramazan-contacts/'+index+'.json');
+            init();
             closeMoreInfoShow();
         }
     };
@@ -39,12 +48,12 @@ const Contacts = props => {
     const goToEdit = () => {
       props.history.replace('/edit/'+userInfo.index)
     };
+    const contactsList = props.contacts && Object.keys(props.contacts).map(elem => {
 
-    const contactsList = props.contacts.map(elem => {
         const liKey = nanoid();
-        return <ListGroupItem onClick={() => openMoreInfoShow(elem.phone)} key={liKey}>
-                <img alt={elem.name} src={elem.photo}/>
-                <h2>{elem.name}</h2>
+        return <ListGroupItem onClick={() => openMoreInfoShow(elem,props.contacts[elem])} key={liKey}>
+                <img alt={props.contacts[elem].name} src={props.contacts[elem].photo}/>
+                <h2>{props.contacts[elem].name}</h2>
             </ListGroupItem>
     });
     return (
@@ -69,7 +78,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    deleteUser: index => dispatch(deleteUser(index)),
+    addContactes: () => dispatch(addContacts()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Contacts);

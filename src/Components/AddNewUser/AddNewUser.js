@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
-import {connect} from "react-redux";
 import Button from "reactstrap/es/Button";
-import {addUser} from "../../actions/action";
 import {FormGroup, Input, Label, Form} from "reactstrap";
+import axios from "axios";
 
 const AddNewUser = props => {
     const initialNewUser = {
@@ -15,12 +14,17 @@ const AddNewUser = props => {
 
     const addChange = e => setNewUser({...newUser, [e.target.name]: e.target.value});
 
+    const addNewContact = async () => {
+      await axios.post('https://lesson-69-ramazan.firebaseio.com/ramazan-contacts.json', newUser);
+    };
+
     return (
         <div>
             <img style={{maxWidth: '40%', float: 'right'}} src={newUser.photo} alt={newUser.name} />
-                <Form className='w-50' onSubmit={e => {
+                <Form className='w-50' onSubmit={async e => {
                     e.preventDefault();
-                    props.addUser(newUser);
+                    // props.addUser(newUser);
+                    await addNewContact();
                     props.history.replace('/')
                 }}>
                     <FormGroup>
@@ -46,12 +50,4 @@ const AddNewUser = props => {
     );
 };
 
-const mapStateToProps = state => ({
-
-});
-
-const mapDispatchToProps = dispatch => ({
-    addUser: data => dispatch(addUser(data))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddNewUser);
+export default AddNewUser

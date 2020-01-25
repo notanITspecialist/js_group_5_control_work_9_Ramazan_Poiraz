@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {connect} from "react-redux";
 import {Form, FormGroup, Input, Label} from "reactstrap";
 import Button from "reactstrap/es/Button";
-import {saveChanges} from "../../actions/action";
+import axios from "axios";
 
 const EditContact = props => {
     const initialUserInfo = {
@@ -11,8 +11,13 @@ const EditContact = props => {
     };
     const [userInfo, setUserInfo] = useState(initialUserInfo);
 
+    const init = async () => {
+      const data = await axios.get('https://lesson-69-ramazan.firebaseio.com/ramazan-contacts/'+props.match.params.id+'.json');
+        setUserInfo({...userInfo, index: props.match.params.id  , info: data.data})
+    };
+
     useEffect(() => {
-        setUserInfo({...userInfo, index: props.match.params.id  , info: props.contacts[props.match.params.id]});
+        init()
     }, []);
 
     const editChange = e => setUserInfo({...userInfo, info: { ...userInfo.info, [e.target.name]: e.target.value} });
@@ -20,9 +25,9 @@ const EditContact = props => {
     return userInfo.info !== null && (
         <div>
             <img style={{maxWidth: '40%', float: 'right'}} src={userInfo.info.photo} alt={userInfo.info.name} />
-            <Form className='w-50' onSubmit={e => {
+            <Form className='w-50' onSubmit={async e => {
                 e.preventDefault();
-                props.saveEdit(userInfo.index,userInfo.info);
+                await axios.put('https://lesson-69-ramazan.firebaseio.com/ramazan-contacts/'+props.match.params.id+'.json', userInfo.info);
                 props.history.replace('/')
             }}>
                 <FormGroup>
@@ -52,8 +57,4 @@ const mapStateToProps = state => ({
     contacts: state.contacts.contacts
 });
 
-const mapDispatchToProps = dispatch => ({
-    saveEdit: (index, data) => dispatch(saveChanges(index, data))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(EditContact);
+export default connect(mapStateToProps)(EditContact);

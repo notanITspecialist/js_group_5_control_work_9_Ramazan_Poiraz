@@ -1,9 +1,8 @@
-export const SAVE_CHANGES = 'SAVE_CHANGES';
-export const DELETE_USER = 'DELETE_USER';
+import axios from "axios";
+export const REQUEST_INFO = 'REQUEST_INFO';
+export const addUser = data => ({type: REQUEST_INFO, data});
 
-export const ADD_USER = 'ADD_USER';
-
-export const saveChanges = (index, data) => ({type: SAVE_CHANGES, index, data});
-export const deleteUser = index => ({type: DELETE_USER, index});
-
-export const addUser = data => ({type: ADD_USER, data});
+export const addContacts = () => async dispatch => {
+    const data = await axios.get('https://lesson-69-ramazan.firebaseio.com/ramazan-contacts.json');
+    dispatch(addUser(data.data))
+};
