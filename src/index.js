@@ -9,19 +9,22 @@ import thunk from "redux-thunk";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import reducer from "./reducer/reducer";
+import {BrowserRouter} from "react-router-dom";
 
 const rootReducer = combineReducers({
-    reducer: reducer
+    contacts: reducer
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const app = (
+    <BrowserRouter>
         <Container>
             <Provider store={store}>
                 <App />
             </Provider>
         </Container>
+    </BrowserRouter>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

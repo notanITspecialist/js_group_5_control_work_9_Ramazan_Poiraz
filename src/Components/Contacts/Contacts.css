@@ -1,0 +1,14 @@
+.Contacts-list li {
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.Contacts-list li h2 {
+    margin: 0 0 0 20px;
+}
+
+.Contacts-list li img {
+    max-width: 200px;
+    max-height: 200px;
+}
